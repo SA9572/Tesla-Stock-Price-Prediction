@@ -1,0 +1,22 @@
+# Core
+flask
+gunicorn
+numpy
+pandas
+scikit-learn
+
+# Deep Learning
+tensorflow
+keras-tuner
+
+# Visualization
+matplotlib
+seaborn
+
+# Jupyter (for notebooks)
+jupyter
+ipykernel
+
+# Utilities
+joblib
+python-dateutil

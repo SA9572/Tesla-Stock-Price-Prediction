@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tesla Stock Price Prediction | AI-Powered Forecasting</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="background-effects">
+      <div class="gradient-blob blob-1"></div>
+      <div class="gradient-blob blob-2"></div>
+      <div class="glow-line"></div>
+    </div>
+
+    <div class="page-wrapper">
+      <!-- Navigation -->
+      <nav class="navbar">
+        <div class="nav-container">
+          <div class="logo-section">
+            <svg
+              class="tesla-logo"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+                fill="currentColor"
+                opacity="0.7"
+              />
+            </svg>
+            <div>
+              <h1 class="logo-text">TESLA</h1>
+              <p class="logo-subtext">Stock Prediction AI</p>
+            </div>
+          </div>
+          <div class="nav-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Live</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h2 class="hero-subtitle">Deep Learning • Time Series Forecasting</h2>
+          <h1 class="hero-title">Tesla Stock Price Prediction</h1>
+          <p class="hero-description">
+            Advanced neural networks predict Tesla's closing stock prices using
+            LSTM and SimpleRNN architectures trained on 10 years of historical
+            data.
+          </p>
+          <div class="hero-stats">
+            <div class="stat">
+              <span class="stat-value">2,416</span>
+              <span class="stat-label">Days of Data</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">2</span>
+              <span class="stat-label">Model Types</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value">6</span>
+              <span class="stat-label">Trained Models</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflow Section -->
+      <section class="workflow">
+        <h2 class="section-title">Project Architecture</h2>
+        <div class="workflow-container">
+          <div class="workflow-step">
+            <div class="step-icon">📊</div>
+            <div class="step-content">
+              <h4>Data Cleaning</h4>
+              <p>Historical Tesla prices processed and normalized</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-step">
+            <div class="step-icon">🔍</div>
+            <div class="step-content">
+              <h4>EDA</h4>
+              <p>Exploratory data analysis and feature engineering</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-step">
+            <div class="step-icon">🧠</div>
+            <div class="step-content">
+              <h4>SimpleRNN</h4>
+              <p>Recurrent neural network model</p>
+            </div>
+          </div>
+          <div class="workflow-arrow">→</div>
+          <div class="workflow-step">
+            <div class="step-icon">🎯</div>
+            <div class="step-content">
+              <h4>LSTM</h4>
+              <p>Long short-term memory model</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Content Grid -->
+      <div class="container">
+        <div class="grid">
+          <!-- Prediction Panel -->
+          <section class="card prediction-card">
+            <div class="card-header">
+              <h2 class="card-title">🎯 Make Prediction</h2>
+              <p class="card-subtitle">Select model and timeframe</p>
+            </div>
+
+            <form id="predictForm" class="form">
+              <div class="form-group">
+                <label for="model" class="form-label">Model</label>
+                <div class="model-selector">
+                  <input
+                    type="radio"
+                    id="lstm"
+                    name="model"
+                    value="lstm"
+                    checked
+                  />
+                  <label for="lstm" class="model-option">
+                    <span class="model-badge lstm-badge">LSTM</span>
+                    <span class="model-desc">Long Short-Term Memory</span>
+                  </label>
+
+                  <input
+                    type="radio"
+                    id="simple_rnn"
+                    name="model"
+                    value="simple_rnn"
+                  />
+                  <label for="simple_rnn" class="model-option">
+                    <span class="model-badge rnn-badge">RNN</span>
+                    <span class="model-desc">SimpleRNN Architecture</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="horizon" class="form-label">Forecast Horizon</label>
+                <div class="horizon-selector">
+                  <input
+                    type="radio"
+                    id="h1"
+                    name="horizon"
+                    value="1"
+                    checked
+                  />
+                  <label for="h1" class="horizon-option">1 Day</label>
+
+                  <input type="radio" id="h5" name="horizon" value="5" />
+                  <label for="h5" class="horizon-option">5 Days</label>
+
+                  <input type="radio" id="h10" name="horizon" value="10" />
+                  <label for="h10" class="horizon-option">10 Days</label>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                id="predictBtn"
+              >
+                <span class="btn-text">Generate Prediction</span>
+                <span class="btn-icon">⚡</span>
+              </button>
+            </form>
+
+            <div id="loading" class="loading hidden">
+              <div class="spinner"></div>
+              <p>Analyzing patterns...</p>
+            </div>
+
+            <div id="error" class="alert alert-error hidden"></div>
+          </section>
+
+          <!-- Results Panel -->
+          <section class="card results-card">
+            <div class="card-header">
+              <h2 class="card-title">📈 Prediction Result</h2>
+              <p class="card-subtitle">AI-Generated Forecast</p>
+            </div>
+
+            <div id="result" class="result hidden">
+              <div class="result-container">
+                <div class="result-section">
+                  <label class="result-label">Predicted Price</label>
+                  <div class="result-value" id="predictedPrice">$000.00</div>
+                </div>
+                <div class="result-section">
+                  <label class="result-label">Model Used</label>
+                  <div class="result-model" id="resultModel">—</div>
+                </div>
+                <div class="result-section">
+                  <label class="result-label">Time Horizon</label>
+                  <div class="result-horizon" id="resultHorizon">—</div>
+                </div>
+              </div>
+              <div class="result-meta" id="resultMeta"></div>
+            </div>
+
+            <div id="no-result" class="no-result">
+              <p>Prediction results will appear here</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- Model Comparison -->
+        <section class="card model-comparison">
+          <div class="card-header">
+            <h2 class="card-title">⚖️ Model Performance Comparison</h2>
+            <p class="card-subtitle">MSE scores on test dataset</p>
+          </div>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Horizon</th>
+                  <th>LSTM MSE</th>
+                  <th>SimpleRNN MSE</th>
+                  <th>Winner</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="horizon-cell">1-Day</td>
+                  <td class="value-cell">
+                    <span class="badge lstm-best">0.000330</span>
+                  </td>
+                  <td class="value-cell">0.000390</td>
+                  <td class="winner-cell">✓ LSTM</td>
+                </tr>
+                <tr>
+                  <td class="horizon-cell">5-Day</td>
+                  <td class="value-cell">
+                    <span class="badge lstm-best">0.001327</span>
+                  </td>
+                  <td class="value-cell">0.001335</td>
+                  <td class="winner-cell">✓ LSTM</td>
+                </tr>
+                <tr>
+                  <td class="horizon-cell">10-Day</td>
+                  <td class="value-cell">0.002643</td>
+                  <td class="value-cell">
+                    <span class="badge rnn-best">0.002431</span>
+                  </td>
+                  <td class="winner-cell">✓ RNN</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Information Panel -->
+        <section class="card info-card">
+          <div class="card-header">
+            <h2 class="card-title">ℹ️ About This Project</h2>
+          </div>
+          <div class="info-content">
+            <div class="info-item">
+              <h4>Deep Learning Models</h4>
+              <p>
+                This application uses pre-trained neural networks (SimpleRNN and
+                LSTM) to predict Tesla's stock prices. Both models are trained
+                on 10 years of historical data (2010-2020) with 60-day lookback
+                windows.
+              </p>
+            </div>
+            <div class="info-item">
+              <h4>Prediction Horizons</h4>
+              <ul class="info-list">
+                <li>
+                  <strong>1-day:</strong> Tomorrow's closing price (MSE:
+                  0.000330 LSTM)
+                </li>
+                <li>
+                  <strong>5-day:</strong> Closing price 5 trading days ahead
+                  (MSE: 0.001327 LSTM)
+                </li>
+                <li>
+                  <strong>10-day:</strong> Closing price 10 trading days ahead
+                  (MSE: 0.002431 RNN)
+                </li>
+              </ul>
+            </div>
+            <div class="info-item">
+              <h4>Technology Stack</h4>
+              <p>
+                PyTorch • Flask API • Real-time Inference • GPU-Optimized •
+                Scikit-Learn Preprocessing
+              </p>
+            </div>
+            <div class="disclaimer">
+              <strong>⚠️ Disclaimer:</strong> These predictions are for
+              educational and research purposes only. This is not financial
+              advice. Stock market predictions contain inherent risks and should
+              not be used as the sole basis for investment decisions.
+            </div>
+          </div>
+        </section>
+
+        <!-- Latest Price -->
+        <section class="card latest-price">
+          <div class="card-header">
+            <h2 class="card-title">💱 Latest Market Data</h2>
+          </div>
+          <div class="price-display">
+            <div class="price-item">
+              <span class="price-label">Current Price</span>
+              <span class="price-value" id="latestPrice">$780.00</span>
+              <button class="btn btn-secondary btn-sm" id="refreshBtn">
+                Refresh
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-content">
+          <p>
+            <strong>Tesla Stock Price Prediction</strong> | Deep Learning
+            Project
+          </p>
+          <p>
+            Models: LSTM & SimpleRNN | Domain: Financial Services | Data:
+            2010-2020
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>

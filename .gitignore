@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Data (keep processed data structure but ignore large files if needed)
+# data/processed/*.npy
+
+# Models (optional - uncomment if models are too large)
+# models/*.h5
+
+# Keras Tuner
+tuner_results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
