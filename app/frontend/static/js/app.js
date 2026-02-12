@@ -1,4 +1,7 @@
 (function () {
+    // Use `window.API_BASE_URL` (set in Vercel env) when deploying frontend separately.
+    // If not set, fall back to relative paths so local dev and monorepo deploys keep working.
+    const API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL.replace(/\/$/, '') : '';
     const form = document.getElementById('predictForm');
     const resultEl = document.getElementById('result');
     const noResultEl = document.getElementById('no-result');
@@ -51,7 +54,7 @@
 
     async function loadLatestPrice() {
         try {
-            const res = await fetch('/api/latest');
+            const res = await fetch(`${API_BASE_URL}/api/latest`);
             const data = await res.json();
             if (data.status === 'success') {
                 latestPriceEl.textContent = '$' + data.latest_price.toLocaleString('en-US', { minimumFractionDigits: 2 });
@@ -69,7 +72,7 @@
         showLoading();
 
         try {
-            const res = await fetch(`/api/predict?model=${encodeURIComponent(model)}&horizon=${horizon}`);
+            const res = await fetch(`${API_BASE_URL}/api/predict?model=${encodeURIComponent(model)}&horizon=${horizon}`);
             const data = await res.json();
 
             if (!res.ok) {
