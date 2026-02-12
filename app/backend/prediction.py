@@ -2,9 +2,17 @@
 Model inference logic for Tesla stock price prediction.
 """
 import numpy as np
-import torch
-import torch.nn as nn
 from pathlib import Path
+
+# Guarded import of torch so the app can start even if torch isn't installed
+try:
+    import torch
+    import torch.nn as nn
+    TORCH_AVAILABLE = True
+except Exception:
+    torch = None
+    nn = None
+    TORCH_AVAILABLE = False
 
 from .utils import get_model_path, get_scaler_path, LOOKBACK, HORIZONS
 from .preprocessing import (
@@ -15,45 +23,54 @@ from .preprocessing import (
     inverse_scale_prices,
 )
 
-# Device configuration
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Device configuration (only if torch is available)
+device = None
+if TORCH_AVAILABLE:
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Model architectures
-class LSTMModel(nn.Module):
-    def __init__(self, input_size=1, hidden_size=64, output_size=1, dropout=0.2):
-        super(LSTMModel, self).__init__()
-        self.hidden_size = hidden_size
-        self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
-        self.dropout = nn.Dropout(dropout)
-        self.fc = nn.Linear(hidden_size, output_size)
-    
-    def forward(self, x):
-        lstm_out, (h_n, c_n) = self.lstm(x)
-        lstm_out = self.dropout(lstm_out)
-        predictions = self.fc(lstm_out[:, -1, :])
-        return predictions
+# Model architectures (defined only if nn is available)
+if TORCH_AVAILABLE:
+    class LSTMModel(nn.Module):
+        def __init__(self, input_size=1, hidden_size=64, output_size=1, dropout=0.2):
+            super(LSTMModel, self).__init__()
+            self.hidden_size = hidden_size
+            self.lstm = nn.LSTM(input_size, hidden_size, batch_first=True)
+            self.dropout = nn.Dropout(dropout)
+            self.fc = nn.Linear(hidden_size, output_size)
+        
+        def forward(self, x):
+            lstm_out, (h_n, c_n) = self.lstm(x)
+            lstm_out = self.dropout(lstm_out)
+            predictions = self.fc(lstm_out[:, -1, :])
+            return predictions
 
-class SimpleRNNModel(nn.Module):
-    def __init__(self, input_size=1, hidden_size=50, output_size=1, dropout=0.2):
-        super(SimpleRNNModel, self).__init__()
-        self.hidden_size = hidden_size
-        self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
-        self.dropout = nn.Dropout(dropout)
-        self.fc = nn.Linear(hidden_size, output_size)
-    
-    def forward(self, x):
-        rnn_out, _ = self.rnn(x)
-        rnn_out = self.dropout(rnn_out)
-        predictions = self.fc(rnn_out[:, -1, :])
-        return predictions
+    class SimpleRNNModel(nn.Module):
+        def __init__(self, input_size=1, hidden_size=50, output_size=1, dropout=0.2):
+            super(SimpleRNNModel, self).__init__()
+            self.hidden_size = hidden_size
+            self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
+            self.dropout = nn.Dropout(dropout)
+            self.fc = nn.Linear(hidden_size, output_size)
+        
+        def forward(self, x):
+            rnn_out, _ = self.rnn(x)
+            rnn_out = self.dropout(rnn_out)
+            predictions = self.fc(rnn_out[:, -1, :])
+            return predictions
 
 
 def load_model(model_type: str, horizon: int):
-    """Load SimpleRNN or LSTM model from disk using PyTorch."""
+    """Load SimpleRNN or LSTM model from disk using PyTorch.
+
+    Returns None if torch is unavailable or model file missing.
+    """
+    if not TORCH_AVAILABLE:
+        return None
+
     path = get_model_path(model_type, horizon)
     if not path.exists():
         return None
-    
+
     # Create model based on type
     if model_type == 'lstm':
         model = LSTMModel(input_size=1, hidden_size=64, output_size=1, dropout=0.2)
@@ -61,7 +78,7 @@ def load_model(model_type: str, horizon: int):
         model = SimpleRNNModel(input_size=1, hidden_size=50, output_size=1, dropout=0.2)
     else:
         return None
-    
+
     # Load weights
     model.load_state_dict(torch.load(path, map_location=device))
     model.to(device)
@@ -84,9 +101,12 @@ def predict_price(model_type: str, horizon: int, use_last_n_days: int = None) ->
     if horizon not in HORIZONS:
         return {"error": f"Invalid horizon. Use {HORIZONS}", "status": "error"}
 
+    if not TORCH_AVAILABLE:
+        return {"error": "PyTorch is not installed in the environment.", "status": "error"}
+
     model = load_model(model_type, horizon)
     if model is None:
-        return {"error": f"Model not found: {model_type}_{horizon}day_best.pt", "status": "error"}
+        return {"error": f"Model not found: {model_type}_{horizon}day_best.pt or torch unavailable", "status": "error"}
 
     scaler = get_scaler()
     if scaler is None:
